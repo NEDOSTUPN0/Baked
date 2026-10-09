@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import io.github.nedostupn0.baked.client.renderer.blockentity.sign.ext.SignTextExt;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.SignText;
 
 // SignText is immutable (edits return a new instance), so hasMessage can be computed once per instance
@@ -18,10 +19,18 @@ public abstract class SignTextMixin implements SignTextExt {
     public boolean baked$hasMessage(boolean filtered) {
         byte cached = filtered ? hasFilteredMessage : hasMessage;
         if (cached == UNKNOWN) {
-            cached = ((SignText) (Object) this).hasMessage(filtered) ? PRESENT : EMPTY;
+            cached = hasNonEmptyLine(((SignText) (Object) this).getMessages(filtered)) ? PRESENT : EMPTY;
             if (filtered) hasFilteredMessage = cached;
             else hasMessage = cached;
         }
         return cached == PRESENT;
+    }
+
+    @Unique
+    private static boolean hasNonEmptyLine(Component[] lines) {
+        for (Component line : lines) {
+            if (!line.getString().isEmpty()) return true;
+        }
+        return false;
     }
 }

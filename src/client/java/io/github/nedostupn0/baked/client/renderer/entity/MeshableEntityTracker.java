@@ -17,7 +17,6 @@ import io.github.nedostupn0.baked.client.renderer.entity.ext.EntityExt;
 import io.github.nedostupn0.baked.client.renderer.misc.RenderModeManager;
 import io.github.nedostupn0.baked.client.renderer.misc.RenderModeManager.RenderMode;
 import io.github.nedostupn0.baked.client.util.entity.ArmorStandUtil;
-import io.github.nedostupn0.baked.client.util.entity.CushionUtil;
 import io.github.nedostupn0.baked.client.util.entity.ItemFrameUtil;
 import io.github.nedostupn0.baked.client.util.entity.PaintingUtil;
 import net.minecraft.client.Minecraft;
@@ -53,7 +52,6 @@ public class MeshableEntityTracker {
     private static final int SETTLE_TICKS = 10;
 
     static {
-        register(EntityTypes.CUSHION, CushionUtil.HANDLER);
         register(EntityTypes.ITEM_FRAME, ItemFrameUtil.HANDLER);
         register(EntityTypes.GLOW_ITEM_FRAME, ItemFrameUtil.HANDLER);
         register(EntityTypes.PAINTING, PaintingUtil.HANDLER);

@@ -14,7 +14,6 @@ import io.github.nedostupn0.baked.client.registry.Registry;
 import io.github.nedostupn0.baked.client.renderer.blockentity.ext.BlockEntityExt;
 import io.github.nedostupn0.baked.client.renderer.misc.RenderModeManager;
 import io.github.nedostupn0.baked.client.renderer.misc.RenderModeManager.RenderMode;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
@@ -23,7 +22,7 @@ import net.minecraft.world.level.block.entity.PotDecorations;
 @Mixin(DecoratedPotBlockEntity.class)
 public abstract class DecoratedPotBlockEntityMixin{
 
-    @Unique PotDecorations defaultPotDecorations = new PotDecorations(Optional.of(new ItemStackTemplate(Items.BRICK)), Optional.of(new ItemStackTemplate(Items.BRICK)), Optional.of(new ItemStackTemplate(Items.BRICK)), Optional.of(new ItemStackTemplate(Items.BRICK)));
+    @Unique PotDecorations defaultPotDecorations = new PotDecorations(Items.BRICK, Items.BRICK, Items.BRICK, Items.BRICK);
 
     @Shadow
     private PotDecorations decorations;

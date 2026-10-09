@@ -27,6 +27,9 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.BlockStateDefinitions;
 import net.minecraft.core.BlockPos;
@@ -119,10 +122,10 @@ public class ItemFrameUtil {
         poseStack.translate(origin.x, origin.y, origin.z);
         poseStack.translate(direction.getStepX() * 0.46875, direction.getStepY() * 0.46875, direction.getStepZ() * 0.46875);
         if (direction.getAxis().isHorizontal()) {
-            poseStack.rotateDegrees(Axis.YP, 180.0F - direction.toYRot());
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - direction.toYRot()));
         } else {
-            poseStack.rotateDegrees(Axis.XP, -90 * direction.getAxisDirection().getStep());
-            poseStack.rotateDegrees(Axis.YP, 180.0F);
+            poseStack.mulPose(Axis.XP.rotationDegrees(-90 * direction.getAxisDirection().getStep()));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         }
 
         QuadBaker baker = new QuadBaker();
@@ -151,8 +154,8 @@ public class ItemFrameUtil {
             // Same transform as ItemFrameRenderer#submit for maps, ending in 0..128 map space.
             poseStack.pushPose();
             poseStack.translate(0.0F, 0.0F, isInvisible ? 0.5F : 0.4375F);
-            poseStack.rotateDegrees(Axis.ZP, (frame.getRotation() % 4 * 2) * 360.0F / 8.0F);
-            poseStack.rotateDegrees(Axis.ZP, 180.0F);
+            poseStack.mulPose(Axis.ZP.rotationDegrees((frame.getRotation() % 4 * 2) * 360.0F / 8.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
             poseStack.translate(-64.0F, -64.0F, 0.0F);
             poseStack.translate(0.0F, 0.0F, -1.0F);
@@ -164,7 +167,7 @@ public class ItemFrameUtil {
         DynamicPartBatch.Builder dynamic = null;
         if (!item.isEmpty() && !hasMap) {
             poseStack.translate(0.0F, 0.0F, isInvisible ? 0.5F : 0.4375F);
-            poseStack.rotateDegrees(Axis.ZP, frame.getRotation() * 360.0F / 8.0F);
+            poseStack.mulPose(Axis.ZP.rotationDegrees(frame.getRotation() * 360.0F / 8.0F));
             poseStack.scale(0.5F, 0.5F, 0.5F);
             dynamic = new DynamicPartBatch.Builder(blockPos);
             itemMeshed = bakeItem(baker, dynamic, frame, item, poseStack, isGlowFrame ? GLOW_ITEM_EMISSION : 0);
@@ -195,9 +198,9 @@ public class ItemFrameUtil {
             layer.applyTransform(poseStack.last());
             int[] tints = layer.tintLayers != null ? layer.tintLayers.toIntArray() : null;
             if (layer.foilType == ItemStackRenderState.FoilType.STANDARD) {
-                addGlintQuads(dynamic, layer.quads.all(), poseStack.last(), tints);
+                addGlintQuads(dynamic, layer.quads, poseStack.last(), tints);
             } else {
-                itemBaker.addQuads(layer.quads.all(), poseStack.last(), lightEmission, null, tints);
+                itemBaker.addQuads(layer.quads, poseStack.last(), lightEmission, null, tints);
             }
             poseStack.popPose();
 
@@ -208,7 +211,7 @@ public class ItemFrameUtil {
         return true;
     }
 
-    /** Glinted item quads keep their own atlas and render type, exactly what vanilla submits for them. */
+    /** Glinted item quads keep their own atlas and render type, and the depth-equal glint pass on top. */
     public static void addGlintQuads(DynamicPartBatch.Builder dynamic, List<BakedQuad> quads, PoseStack.Pose pose, int @Nullable [] tints) {
         Vector3f[] positions = new Vector3f[4];
         float[] us = new float[4];
@@ -222,8 +225,17 @@ public class ItemFrameUtil {
             Vector3f normal = pose.normal().transform(new Vector3f(quad.direction().getUnitVec3f())).normalize();
             int tintIndex = quad.materialInfo().tintIndex();
             int color = tints != null && tintIndex >= 0 && tintIndex < tints.length ? tints[tintIndex] : -1;
-            dynamic.addQuad(quad.materialInfo().itemGlintRenderType(), positions, us, vs, normal, color);
+            RenderType renderType = quad.materialInfo().itemRenderType();
+            dynamic.addQuad(renderType, positions, us, vs, normal, color);
+            dynamic.addOverlayQuad(glintRenderType(renderType), positions, us, vs, normal, -1);
         }
+    }
+
+    /** Mirrors ItemFeatureRenderer's choice of glint pass. */
+    private static RenderType glintRenderType(RenderType renderType) {
+        boolean transparent = Minecraft.getInstance().gameRenderer.gameRenderState().useShaderTransparency()
+            && renderType.outputTarget() == OutputTarget.ITEM_ENTITY_TARGET;
+        return transparent ? RenderTypes.glintTranslucent() : RenderTypes.glint();
     }
 
     private static boolean isStatic(ItemStackRenderState.LayerRenderState layer, boolean experimental) {
@@ -234,7 +246,7 @@ public class ItemFrameUtil {
 
         // Translucent geometry would end up in the cutout layer of the vanilla section compiler.
         // Tints are checked by the baker: they need the experimental palette.
-        for (BakedQuad quad : layer.quads.all()) {
+        for (BakedQuad quad : layer.quads) {
             if (quad.materialInfo().layer().translucent()) return false;
         }
         return true;

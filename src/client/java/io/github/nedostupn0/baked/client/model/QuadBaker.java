@@ -158,10 +158,8 @@ public class QuadBaker {
                 target,
                 targetLayer,
                 info.itemRenderType(),
-                info.itemGlintRenderType(),
-                info.itemGlintSpecialRenderType(),
                 tintIndex,
-                info.shadeDirectionOverride(),
+                info.shade(),
                 Math.max(info.lightEmission(), lightEmission)
             );
 

@@ -57,14 +57,8 @@ public abstract class BannerRendererMixin {
     private static void baked$submitBanner(final SpriteGetter sprites, final PoseStack poseStack, final SubmitNodeCollector submitNodeCollector, final int lightCoords, final int overlayCoords, final BannerModel model, final BannerFlagModel flagModel, final float phase, final DyeColor baseColor, final BannerPatternLayers patterns, final ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress, final int outlineColor) {
         SpriteId sprite = Sheets.BANNER_BASE;
         // submitNodeCollector.submitModel(model, Unit.INSTANCE, poseStack, lightCoords, overlayCoords, -1, sprite, sprites, outlineColor);
-        submitNodeCollector.submitModel(flagModel, phase, poseStack, lightCoords, overlayCoords, -1, sprite, sprites, outlineColor);
-        if (breakProgress != null) {
-            int overlayOrder = patterns.layers().size() + 2;
-            // submitNodeCollector.order(overlayOrder).submitCrumblingOverlay(model, Unit.INSTANCE, poseStack, sprite.renderType(model.renderType()), lightCoords, overlayCoords, -1, breakProgress);
-            submitNodeCollector.order(overlayOrder).submitCrumblingOverlay(flagModel, phase, poseStack, sprite.renderType(flagModel.renderType()), lightCoords, overlayCoords, -1, breakProgress);
-        }
-
-        BannerRenderer.submitPatterns(sprites, poseStack, submitNodeCollector, lightCoords, overlayCoords, flagModel, phase, true, baseColor, patterns);
+        submitNodeCollector.submitModel(flagModel, phase, poseStack, lightCoords, overlayCoords, -1, sprite, sprites, outlineColor, breakProgress);
+        BannerRenderer.submitPatterns(sprites, poseStack, submitNodeCollector, lightCoords, overlayCoords, flagModel, phase, true, baseColor, patterns, breakProgress);
    }
 
     @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)

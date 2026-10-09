@@ -215,18 +215,6 @@ public class SettingsManager {
         reloadChunksAction
     );
 
-    public static Option<Boolean> OPTIMISED_CUSHIONS = loadOptionWithDefaults("optimized_cushion",
-        "baked.config.option.optimised_cushions",
-        !isIncompatible,
-        reloadChunksAction
-    );
-
-    public static Option<Boolean> CUSHION_AMBIENT_OCCLUSION = loadOptionWithDefaults("cushion_ambient_occlusion",
-        "baked.config.option.cushion_ao",
-        false,
-        reloadResourcesAction
-    );
-
     public static Option<Boolean> OPTIMISED_ITEM_FRAMES = loadOptionWithDefaults("optimized_item_frame",
         "baked.config.option.optimised_item_frames",
         "baked.config.option.optimised_item_frames.description",

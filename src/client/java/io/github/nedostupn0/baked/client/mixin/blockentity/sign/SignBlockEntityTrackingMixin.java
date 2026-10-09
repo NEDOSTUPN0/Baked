@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.github.nedostupn0.baked.client.renderer.sign.SignTextBatch;
 import net.minecraft.client.Minecraft;
@@ -19,7 +20,7 @@ public abstract class SignBlockEntityTrackingMixin {
     }
 
     @Inject(method = "setText", at = @At("TAIL"))
-    private void baked$onSetText(CallbackInfo ci) {
+    private void baked$onSetText(CallbackInfoReturnable<Boolean> cir) {
         baked$markDirty();
     }
 

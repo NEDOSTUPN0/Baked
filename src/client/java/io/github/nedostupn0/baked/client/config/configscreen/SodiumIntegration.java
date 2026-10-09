@@ -104,12 +104,6 @@ public class SodiumIntegration implements ConfigEntryPoint {
             )
 
             .addOptionGroup(builder.createOptionGroup()
-                .setName(Component.translatable("baked.config.category.cushions"))
-                .addOption(createBooleanOption(builder, SettingsManager.OPTIMISED_CUSHIONS))
-                .addOption(createBooleanOption(builder, SettingsManager.CUSHION_AMBIENT_OCCLUSION))
-            )
-
-            .addOptionGroup(builder.createOptionGroup()
                 .setName(Component.translatable("baked.config.category.item_frames"))
                 .addOption(createBooleanOption(builder, SettingsManager.OPTIMISED_ITEM_FRAMES))
                 .addOption(createBooleanOption(builder, SettingsManager.BATCHED_MAPS))

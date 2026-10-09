@@ -58,7 +58,7 @@ public class PaintingUtil {
 
         PoseStack poseStack = new PoseStack();
         poseStack.translate(origin.x, origin.y, origin.z);
-        poseStack.rotateDegrees(Axis.YP, 180 - direction.get2DDataValue() * 90);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - direction.get2DDataValue() * 90));
         PoseStack.Pose pose = poseStack.last();
 
         BakedQuad.MaterialInfo frontMaterial = material(front);
@@ -138,7 +138,7 @@ public class PaintingUtil {
     }
 
     private static BakedQuad.MaterialInfo material(TextureAtlasSprite sprite) {
-        return BakedQuad.MaterialInfo.of(new Material.Baked(sprite, false), Transparency.NONE, -1, null, 0);
+        return BakedQuad.MaterialInfo.of(new Material.Baked(sprite, false), Transparency.NONE, -1, true, 0);
     }
 
     private static BakedQuad quad(PoseStack.Pose pose, BakedQuad.MaterialInfo material, int nx, int ny, int nz,

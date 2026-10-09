@@ -3,8 +3,6 @@ package io.github.nedostupn0.baked.client.renderer.sign;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
 
 import org.joml.Matrix4fStack;
 import org.joml.Vector4f;
@@ -13,12 +11,11 @@ import org.joml.Vector4fc;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.renderpearl.api.GpuFormat;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import com.mojang.renderpearl.api.device.GpuDevice;
-import com.mojang.renderpearl.api.textures.FilterMode;
-import com.mojang.renderpearl.api.textures.GpuTexture;
-import com.mojang.renderpearl.api.textures.GpuTextureView;
+import com.mojang.blaze3d.GpuFormat;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -207,14 +204,13 @@ public final class SignTextAtlas {
             poseStack.popPose();
         }
 
-        try (
-            FeatureRenderDispatcher.PreparedFrame frame = dispatcher.prepareFrame(storage);
-            RenderPass renderPass = RenderSystem.getDevice()
-                .createCommandEncoder()
-                .createRenderPass(() -> "baked sign text", page.getTextureView(), Optional.empty(), page.depthView, OptionalDouble.empty())
-        ) {
-            RenderSystem.bindDefaultUniforms(renderPass);
-            FeatureRenderDispatcher.renderAllFeatures(renderPass, frame);
+        RenderSystem.outputColorTextureOverride = page.getTextureView();
+        RenderSystem.outputDepthTextureOverride = page.depthView;
+        try {
+            dispatcher.renderAllFeatures(storage);
+        } finally {
+            RenderSystem.outputColorTextureOverride = null;
+            RenderSystem.outputDepthTextureOverride = null;
         }
     }
 }

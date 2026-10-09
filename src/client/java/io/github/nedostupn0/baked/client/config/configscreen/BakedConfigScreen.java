@@ -95,10 +95,6 @@ public class BakedConfigScreen extends Screen {
         list.category("baked.config.category.beacons").build();
         list.button(SettingsManager.OPTIMISED_BEACONS).build();
 
-        list.category("baked.config.category.cushions").build();
-        list.button(SettingsManager.OPTIMISED_CUSHIONS).build();
-        list.button(SettingsManager.CUSHION_AMBIENT_OCCLUSION).build();
-
         list.category("baked.config.category.item_frames").build();
         list.button(SettingsManager.OPTIMISED_ITEM_FRAMES).build();
         list.button(SettingsManager.BATCHED_MAPS).build();

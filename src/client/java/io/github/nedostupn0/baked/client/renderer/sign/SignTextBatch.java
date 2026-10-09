@@ -14,6 +14,7 @@ import org.jspecify.annotations.Nullable;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import io.github.nedostupn0.baked.client.config.SettingsManager;
+import io.github.nedostupn0.baked.client.renderer.blockentity.sign.ext.SignTextExt;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
@@ -30,7 +31,6 @@ import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
-import net.minecraft.world.level.block.entity.SignTextSlot;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -205,7 +205,7 @@ public final class SignTextBatch {
         boolean filter = Minecraft.getInstance().isTextFilteringEnabled();
         for (SignBlockEntity sign : known) {
             if (entries.containsKey(sign) || pending.contains(sign) || rejected.contains(sign)) continue;
-            if (!sign.getText(SignTextSlot.FRONT).hasMessage(filter) && !sign.getText(SignTextSlot.BACK).hasMessage(filter)) continue;
+            if (!((SignTextExt) sign.getFrontText()).baked$hasMessage(filter) && !((SignTextExt) sign.getBackText()).baked$hasMessage(filter)) continue;
             pending.add(sign);
             healed++;
         }
@@ -248,8 +248,8 @@ public final class SignTextBatch {
 
         List<Side> sides = new ArrayList<>(2);
         // Text straight from the sign: culling mods blank back-facing sides in the render state.
-        if (!addSide(sides, sign, state, sign.getText(SignTextSlot.FRONT), state.transformations.frontText().getMatrix())) return releaseAll(sides);
-        if (!addSide(sides, sign, state, sign.getText(SignTextSlot.BACK), state.transformations.backText().getMatrix())) return releaseAll(sides);
+        if (!addSide(sides, sign, state, sign.getFrontText(), state.transformations.frontText().getMatrix())) return releaseAll(sides);
+        if (!addSide(sides, sign, state, sign.getBackText(), state.transformations.backText().getMatrix())) return releaseAll(sides);
         return sides;
     }
 

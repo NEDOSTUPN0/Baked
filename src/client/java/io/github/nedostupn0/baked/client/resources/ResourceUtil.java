@@ -8,13 +8,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.nedostupn0.baked.client.model.BlockEntityStateModel;
 import io.github.nedostupn0.baked.client.registry.Registry;
 import io.github.nedostupn0.baked.client.renderer.skull.SkinPool;
-import io.github.nedostupn0.baked.client.util.entity.CushionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.UvMapping;
+import io.github.nedostupn0.baked.client.model.UvMapping;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
@@ -35,7 +34,7 @@ public class ResourceUtil{
     /** How model UVs map into the atlas for a texture: the sprite itself, or a part of it for virtual sprites. */
     public static UvMapping getUvMapping(Identifier id, TextureAtlasSprite sprite) {
         SkinPool.Slot slot = SkinPool.isSlot(id) ? SkinPool.slot(id) : null;
-        return slot != null ? slot : sprite;
+        return slot != null ? slot : UvMapping.of(sprite);
     }
 
     public static BlockStateModel getModel(ModelLayerLocation modelLayerLocation, Identifier texture, BlockState blockState, PoseStack poseStack, boolean useAo, Material.Baked particleMaterial){
@@ -78,7 +77,6 @@ public class ResourceUtil{
         transformedSpecialModelCache.clear();
         transformedModelCache.clear();
         transformedSubModelCache.clear();
-        CushionUtil.clearCache();
     }
 
     public static Identifier entityTextureFormatter(Identifier identifier){

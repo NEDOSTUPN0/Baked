@@ -31,7 +31,6 @@
 		"entity.EntityMixin",
 		"entity.ext.EntityMixin",
 		"entity.ext.EntityRenderStateMixin",
-		"entity.renderers.cushion.CushionRendererMixin",
 		"entity.renderers.itemframe.ItemFrameRendererMixin",
 		"entity.renderers.painting.PaintingRendererMixin",
 		"entity.renderers.armorstand.ArmorStandRendererMixin",
@@ -50,7 +49,6 @@
 		"core.ModelManagerMixin",
 		"BlockStateModelSetMixin",
 		"map.ClientPacketListenerMixin",
-		"texture.PalettedTextureManagerMixin",
 		"texture.TextureAtlasMixin",
 		"level.ClientLevelMixin"
 	],

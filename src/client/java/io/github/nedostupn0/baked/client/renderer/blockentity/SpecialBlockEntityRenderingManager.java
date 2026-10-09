@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.entity.ShelfBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
-import net.minecraft.world.level.block.entity.SignTextSlot;
 
 public class SpecialBlockEntityRenderingManager {
     public static boolean shouldSkipRendering(BlockEntity be) {
@@ -45,7 +44,7 @@ public class SpecialBlockEntityRenderingManager {
 
     private static boolean isEmpty(SignBlockEntity be){
         boolean shouldFilter = Minecraft.getInstance().isTextFilteringEnabled();
-        return !hasMessage(be.getText(SignTextSlot.FRONT), shouldFilter) && !hasMessage(be.getText(SignTextSlot.BACK), shouldFilter);
+        return !hasMessage(be.getFrontText(), shouldFilter) && !hasMessage(be.getBackText(), shouldFilter);
     }
 
     private static boolean hasMessage(SignText text, boolean filtered){

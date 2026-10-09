@@ -22,7 +22,6 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.resources.model.cuboid.FaceBakery;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.UvMapping;
 import net.minecraft.client.resources.model.SimpleModelWrapper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.BakedQuad.MaterialInfo;
@@ -103,7 +102,7 @@ public class BlockEntityStateModel implements BlockStateModel{
                 transparency = Transparency.NONE;
             }
 
-            MaterialInfo matInfo = MaterialInfo.of(bakedMat, transparency, -1, null, 0);
+            MaterialInfo matInfo = MaterialInfo.of(bakedMat, transparency, -1, true, 0);
 
             Vector3f[] positions = new Vector3f[4];
             long[] uvs = new long[4];

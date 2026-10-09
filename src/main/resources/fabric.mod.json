@@ -37,14 +37,14 @@
 	"accessWidener": "baked.classtweaker",
 	"depends": {
 		"fabricloader": ">=0.18.4",
-		"minecraft": "~26.3",
+		"minecraft": "~26.2",
 		"java": ">=25",
 		"fabric-api": "*"
 	},
 	"breaks": {
 		"obe": "*",
 		"betterblockentities": "*",
-		"entity_model_features": "<3.3.2-fabric-26.3",
-		"entitytexturefeatures": "<7.2.1-fabric-26.3"
+		"entity_model_features": "<3.3.2-fabric-26.2",
+		"entitytexturefeatures": "<7.2.1-fabric-26.2"
 	}
 }
