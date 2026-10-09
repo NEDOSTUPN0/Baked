@@ -1,0 +1,27 @@
+package io.github.nedostupn0.baked.client.mixin.blockentity.sign;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+
+import io.github.nedostupn0.baked.client.renderer.blockentity.sign.ext.SignTextExt;
+import net.minecraft.world.level.block.entity.SignText;
+
+// SignText is immutable (edits return a new instance), so hasMessage can be computed once per instance
+// instead of streaming and stringifying every line on every frame
+@Mixin(SignText.class)
+public abstract class SignTextMixin implements SignTextExt {
+    @Unique private static final byte UNKNOWN = 0, EMPTY = 1, PRESENT = 2;
+    @Unique private byte hasMessage = UNKNOWN;
+    @Unique private byte hasFilteredMessage = UNKNOWN;
+
+    @Override
+    public boolean baked$hasMessage(boolean filtered) {
+        byte cached = filtered ? hasFilteredMessage : hasMessage;
+        if (cached == UNKNOWN) {
+            cached = ((SignText) (Object) this).hasMessage(filtered) ? PRESENT : EMPTY;
+            if (filtered) hasFilteredMessage = cached;
+            else hasMessage = cached;
+        }
+        return cached == PRESENT;
+    }
+}

@@ -1,0 +1,74 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+	maven { url = "https://maven.fabricmc.net/" }
+	maven { url = "https://maven.caffeinemc.net/releases" }
+	maven { url = "https://maven.caffeinemc.net/snapshots" }
+	maven { url = "https://api.modrinth.com/maven" }
+	maven { url = "https://maven.terraformersmc.com/releases" }
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		"baked" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+
+	accessWidenerPath = file("src/main/resources/baked.classtweaker")
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	compileOnly "maven.modrinth:modmenu:${project.modmenu_version}"
+
+	compileOnly "net.caffeinemc:sodium-fabric-api:${project.sodium_version}"
+	implementation "net.caffeinemc:sodium-fabric:${project.sodium_version}"
+	implementation "maven.modrinth:iris:${project.iris_version}"
+
+	compileOnly "maven.modrinth:entitytexturefeatures:7.2.1-fabric-26.2"
+	compileOnly "maven.modrinth:entity-model-features:3.3.2-fabric-26.2"
+	compileOnly "maven.modrinth:lootr:6aAxKwLC"
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+
+	from(files("LICENSE", "COPYING")) {
+		rename { "${it}_$projectName" }
+	}
+}
+
+base {
+	archivesName = project.name + "+" + project.minecraft_version
+}

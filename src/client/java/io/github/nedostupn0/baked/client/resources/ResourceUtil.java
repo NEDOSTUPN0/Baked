@@ -1,0 +1,100 @@
+package io.github.nedostupn0.baked.client.resources;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import io.github.nedostupn0.baked.client.model.BlockEntityStateModel;
+import io.github.nedostupn0.baked.client.registry.Registry;
+import io.github.nedostupn0.baked.client.renderer.skull.SkinPool;
+import io.github.nedostupn0.baked.client.util.entity.CushionUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.block.BlockStateModelSet;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.UvMapping;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class ResourceUtil{
+
+    private static Map<BlockState, BlockStateModel> transformedModelCache = new ConcurrentHashMap<>();
+    private static Map<SpecialModelCacheKey, BlockStateModel> transformedSpecialModelCache = new ConcurrentHashMap<>();
+    private static Map<ModelCacheKey, BlockStateModel> transformedSubModelCache = new ConcurrentHashMap<>();
+
+    public static TextureAtlasSprite getSprite(Identifier id) {
+        if(SkinPool.isSlot(id)) id = SkinPool.SPRITE;
+        return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS).getSprite(id);
+    }
+
+    /** How model UVs map into the atlas for a texture: the sprite itself, or a part of it for virtual sprites. */
+    public static UvMapping getUvMapping(Identifier id, TextureAtlasSprite sprite) {
+        SkinPool.Slot slot = SkinPool.isSlot(id) ? SkinPool.slot(id) : null;
+        return slot != null ? slot : sprite;
+    }
+
+    public static BlockStateModel getModel(ModelLayerLocation modelLayerLocation, Identifier texture, BlockState blockState, PoseStack poseStack, boolean useAo, Material.Baked particleMaterial){
+        return transformedModelCache.computeIfAbsent(blockState, layer -> new BlockEntityStateModel(modelLayerLocation, texture, poseStack, useAo, blockState, particleMaterial));
+    }
+
+    public static BlockStateModel getModel(ModelLayerLocation modelLayerLocation, Identifier texture, BlockState blockState, Object cacheKey, PoseStack poseStack, boolean useAo, Material.Baked particleMaterial){
+        return transformedSpecialModelCache.computeIfAbsent(new SpecialModelCacheKey(blockState, cacheKey), layer -> new BlockEntityStateModel(modelLayerLocation, texture, poseStack, useAo, blockState, particleMaterial));
+    }
+
+    public static BlockStateModel getSubModel(ModelLayerLocation modelLayerLocation, Identifier texture, BlockState blockState, PoseStack poseStack, boolean useAo, Material.Baked particleMaterial){
+        return transformedSubModelCache.computeIfAbsent(new ModelCacheKey(modelLayerLocation, blockState), layer -> new BlockEntityStateModel(modelLayerLocation, texture, poseStack, useAo, blockState, particleMaterial));
+    }
+
+    public static BlockStateModel getModel(BlockState state){
+        return transformedModelCache.get(state);
+    }
+
+    public static BlockStateModel getModel(BlockState state, BlockEntity be){
+        return transformedSpecialModelCache.get(new SpecialModelCacheKey(state, be));
+    }
+
+    public static boolean cacheContains(BlockState state){
+        return transformedModelCache.containsKey(state);
+    }
+
+    public static boolean cacheContains(BlockState state, BlockEntity be){
+        return transformedSpecialModelCache.containsKey(new SpecialModelCacheKey(state, be));
+    }
+
+    public static void cache(BlockState blockState, BlockStateModel model){
+        transformedModelCache.put(blockState, model);
+    }
+
+    public static void cache(BlockState blockState, Object cacheKey, BlockStateModel model){
+        transformedSpecialModelCache.put(new SpecialModelCacheKey(blockState, cacheKey), model);
+    }
+
+    public static void clearCache(){
+        transformedSpecialModelCache.clear();
+        transformedModelCache.clear();
+        transformedSubModelCache.clear();
+        CushionUtil.clearCache();
+    }
+
+    public static Identifier entityTextureFormatter(Identifier identifier){
+        return Identifier.tryBuild(identifier.getNamespace(), identifier.getPath().replace(".png", "").replace("textures/", ""));
+    }
+
+    public static BlockStateModel getDefaultModel(BlockState blockState){
+        BlockStateModelSet modelSet = Minecraft.getInstance().getModelManager().getBlockStateModelSet();
+        if(Registry.getGroup(blockState) != null){
+            return modelSet.modelByState.getOrDefault(blockState, modelSet.missingModel());
+        }
+        else{
+            return modelSet.get(blockState);
+        }
+    }
+
+    public record ModelCacheKey(ModelLayerLocation modelLayerLocation, BlockState blockState) {}
+    public record SpecialModelCacheKey(BlockState blockState, Object cacheKey) {}
+}

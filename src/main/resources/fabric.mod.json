@@ -1,0 +1,50 @@
+{
+	"schemaVersion": 1,
+	"id": "baked",
+	"version": "${version}",
+	"name": "Baked",
+	"description": "Bakes block entities, item frames, paintings and armor stands into the chunk mesh for a large FPS boost, without losing animations. A fork of Optimized Block Entities (OBE) by maDU59_.",
+	"authors": [
+		"NEDOSTUPN0"
+	],
+	"contributors": [
+		"maDU59_ (author of Optimized Block Entities)"
+	],
+	"contact": {
+		"sources": "https://github.com/NEDOSTUPN0/Baked",
+		"issues": "https://github.com/NEDOSTUPN0/Baked/issues"
+	},
+	"license": "LGPL-3.0-or-later",
+	"icon": "assets/baked/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"io.github.nedostupn0.baked.client.BakedClient"
+		],
+		"modmenu": [
+			"io.github.nedostupn0.baked.client.config.configscreen.ModMenuIntegration"
+		],
+		"sodium:config_api_user": [
+			"io.github.nedostupn0.baked.client.config.configscreen.SodiumIntegration"
+		]
+	},
+	"mixins": [
+		{
+			"config": "baked.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"accessWidener": "baked.classtweaker",
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"breaks": {
+		"obe": "*",
+		"betterblockentities": "*",
+		"entity_model_features": "<3.3.2-fabric-26.3",
+		"entitytexturefeatures": "<7.2.1-fabric-26.3"
+	}
+}
