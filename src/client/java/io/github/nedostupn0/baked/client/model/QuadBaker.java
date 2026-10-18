@@ -38,6 +38,7 @@ import net.minecraft.util.RandomSource;
 public class QuadBaker {
     private static final Direction[] DIRECTIONS = Direction.values();
     private static final float CELL_BIAS = 1.0E-3F;
+    private static final float BOUNDARY_SNAP = 1.0F / 32.0F;
 
     private final List<BakedQuad> quads = new ArrayList<>();
     /** Experimental: carry tints through {@link TintPalette} instead of failing on them. */
@@ -215,13 +216,24 @@ public class QuadBaker {
             }
             // Faces lying exactly on a block boundary belong to the block behind them (the one they bound).
             Vec3i n = quad.direction().getUnitVec3i();
-            BlockPos cell = new BlockPos(Mth.floor(cx / 4 - n.getX() * CELL_BIAS), Mth.floor(cy / 4 - n.getY() * CELL_BIAS), Mth.floor(cz / 4 - n.getZ() * CELL_BIAS));
+            BlockPos cell = new BlockPos(cellCoord(cx / 4, n.getX()), cellCoord(cy / 4, n.getY()), cellCoord(cz / 4, n.getZ()));
             byBlock.computeIfAbsent(cell, k -> new ArrayList<>()).add(cell.equals(BlockPos.ZERO) ? quad : translate(quad, -cell.getX(), -cell.getY(), -cell.getZ()));
         }
 
         List<MeshableEntityTracker.Piece> pieces = new ArrayList<>(byBlock.size());
         byBlock.forEach((cell, cellQuads) -> pieces.add(new MeshableEntityTracker.Piece(origin.offset(cell), build(cellQuads, particleMaterial, useAo))));
         return pieces;
+    }
+
+    /**
+     * Quads crossing a block boundary sideways (item edges in an invisible frame straddle the wall) go to the block
+     * nearer the origin, or they would pick up the light of the solid block behind.
+     */
+    private static int cellCoord(float center, int normal) {
+        if (normal != 0) return Mth.floor(center - normal * CELL_BIAS);
+        int boundary = Math.round(center);
+        if (Math.abs(center - boundary) >= BOUNDARY_SNAP) return Mth.floor(center);
+        return boundary > 0 ? boundary - 1 : boundary;
     }
 
     private static BakedQuad translate(BakedQuad quad, float dx, float dy, float dz) {
