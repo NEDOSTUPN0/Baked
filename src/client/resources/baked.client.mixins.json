@@ -42,6 +42,7 @@
 		"renderer.SectionCompilerMixin",
 		"renderer.LevelRendererMixin",
 		"renderer.CrumblingPassMixin",
+		"renderer.debug.EntityHitboxDebugRendererMixin",
 		"renderer.BlockEntityRenderDispatcherMixin",
 		"renderer.SectionRenderDispatcherMixin",
 		"renderer.compat.sodium.ChunkBuilderMeshingTaskMixin",

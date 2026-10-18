@@ -41,12 +41,16 @@ public class RenderModeManager {
      * needed.
      */
     public static boolean canSkipMeshedEntity(Entity entity){
+        if(hitboxPass) return false;
         if(!(entity instanceof EntityExt ext) || !ext.baked$isSupported()) return false;
         if(ext.baked$renderMode() != RenderMode.TERRAIN || !ext.baked$fullyMeshed()) return false;
         if(!MeshableEntityTracker.isEnabled(entity)) return false;
         if(entity.shouldShowName() || entity.isCurrentlyGlowing()) return false;
         return Minecraft.getInstance().crosshairPickEntity != entity;
     }
+
+    /** Set while the hitbox debug renderer checks visibility, so baked entities keep their hitboxes. */
+    public static boolean hitboxPass = false;
 
     /** Set while a vanilla renderer runs into a capturing collector, so our own skips stay out of the way. */
     public static boolean capturing = false;
